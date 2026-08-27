@@ -10,7 +10,4 @@ package com.mycompany.endproject;
  */
 public class Endproject {
 
-    public static void main(String[] args) {
-        System.out.println("Hello World!");
-    }
 }
