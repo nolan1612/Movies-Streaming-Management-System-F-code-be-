@@ -8,6 +8,6 @@ package enums;
  *
  * @author nguyenhoangminhnhat
  */
-public enum WatchSatus {
-    WATCHING, COMPLETE, DROPPED
+public enum WatchStatus {
+    WATCHING, COMPLETED, DROPPED
 }
