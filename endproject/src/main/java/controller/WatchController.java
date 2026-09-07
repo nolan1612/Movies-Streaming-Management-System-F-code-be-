@@ -1,24 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package controller;
 
+import model.Movie;
 import service.WatchService;
 import java.util.List;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class WatchController {
     private WatchService watchService;
 
     public WatchController(WatchService watchService) {
         this.watchService = watchService;
     }
-    
-    public void addToWatchlist(String userId, String movieId) { watchService.addToWatchlist(userId, movieId); }
-    public void removeFromWatchlist(String userId, String movieId) { watchService.removeFromWatchlist(userId, movieId); }
-    public void watchMovie(String userId, String movieId) { watchService.watchMovie(userId, movieId); }
-    public List<String> getRecentMovies() { return watchService.getRecentStack().getRecentMovies(); }
+
+    public String addToWatchlist(String userId, String movieId) { return watchService.addToWatchlist(userId, movieId); }
+    public String removeFromWatchlist(String userId, String movieId) { return watchService.removeFromWatchlist(userId, movieId); }
+    public String addFavorite(String userId, String movieId) { return watchService.addFavorite(userId, movieId); }
+    public String removeFavorite(String userId, String movieId) { return watchService.removeFavorite(userId, movieId); }
+    public List<Movie> getFavoriteMovies(String userId) { return watchService.getFavoriteMovies(userId); }
+    public List<Movie> getWatchlistMovies(String userId) { return watchService.getWatchlistMovies(userId); }
+    public void startWatching(String userId, String movieId) { watchService.startWatchingMovie(userId, movieId); }
+    public List<String> getRecentMovies(String userId) { return watchService.getRecentMovies(userId); }
 }

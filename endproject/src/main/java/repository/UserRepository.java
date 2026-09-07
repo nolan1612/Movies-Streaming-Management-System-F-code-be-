@@ -1,20 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package repository;
 
 import model.User;
 import utils.FileManager;
 import java.util.HashMap;
 import java.util.Map;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class UserRepository {
     private final String FILE_PATH = "data/users.dat";
-    private Map<String, User> userMap; // Key: username
+    private Map<String, User> userMap;
 
     @SuppressWarnings("unchecked")
     public UserRepository() {

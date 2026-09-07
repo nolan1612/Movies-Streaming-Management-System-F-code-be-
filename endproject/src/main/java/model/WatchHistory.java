@@ -1,16 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import enums.WatchStatus;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class WatchHistory implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -19,7 +12,7 @@ public class WatchHistory implements Serializable {
     private String movieId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private int lastPosition; // thoi gian da xem
+    private int lastPosition;
     private WatchStatus watchStatus;
     private LocalDateTime createdAt;
 

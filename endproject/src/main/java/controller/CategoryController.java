@@ -1,17 +1,9 @@
 package controller;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 import model.Category;
 import service.CategoryService;
 import java.util.List;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class CategoryController {
     private CategoryService categoryService;
 
@@ -20,5 +12,7 @@ public class CategoryController {
     }
 
     public List<Category> getCategories() { return categoryService.getAllCategories(); }
-    public void addCategory(Category category) { categoryService.addCategory(category); }
+    public boolean addCategory(Category category) { return categoryService.addCategory(category); }
+    public boolean updateCategory(String oldName, String newName, String desc) { return categoryService.updateCategory(oldName, newName, desc); }
+    public String deleteCategory(String name) { return categoryService.deleteCategory(name); }
 }

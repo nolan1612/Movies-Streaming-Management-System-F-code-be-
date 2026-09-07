@@ -1,20 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package repository;
 
 import model.Favorite;
 import utils.FileManager;
 import java.util.HashMap;
 import java.util.Map;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class FavoriteRepository {
     private final String FILE_PATH = "data/favorites.dat";
-    private Map<String, Favorite> favorites; // Key: userId
+    private Map<String, Favorite> favorites;
 
     @SuppressWarnings("unchecked")
     public FavoriteRepository() {
@@ -34,4 +27,8 @@ public class FavoriteRepository {
         favorites.put(favorite.getUserId(), favorite);
         save();
     }
+    
+    public Map<String, Favorite> findAll() {
+    return favorites;
+}
 }

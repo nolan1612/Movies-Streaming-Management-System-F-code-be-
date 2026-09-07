@@ -1,20 +1,11 @@
 package service;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 import model.Movie;
 import repository.MovieRepository;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class ReportService {
     private MovieRepository movieRepository;
 

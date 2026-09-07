@@ -1,20 +1,13 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package repository;
 
 import model.Watchlist;
 import utils.FileManager;
 import java.util.HashMap;
 import java.util.Map;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class WatchlistRepository {
     private final String FILE_PATH = "data/watchlists.dat";
-    private Map<String, Watchlist> watchlists; // Key: userId
+    private Map<String, Watchlist> watchlists;
 
     @SuppressWarnings("unchecked")
     public WatchlistRepository() {
@@ -33,5 +26,9 @@ public class WatchlistRepository {
     public void addOrUpdate(Watchlist watchlist) {
         watchlists.put(watchlist.getUserId(), watchlist);
         save();
+    }
+    
+    public Map<String, Watchlist> findAll() {
+    return watchlists;
     }
 }

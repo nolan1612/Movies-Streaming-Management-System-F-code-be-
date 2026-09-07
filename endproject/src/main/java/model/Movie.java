@@ -1,26 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author nguyenhoangminhnhat
- */
 public class Movie implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String movieId;
     private String title;
     private String description;
-    private int duration; // tính bằng phút
+    private int duration;
     private int releaseYear;
-    private double rating; // 0 - 10
+    private double rating;
     private int views;
     private int favoriteCount;
     private String director;
@@ -53,6 +45,13 @@ public class Movie implements Serializable {
     public int getFavoriteCount() { return favoriteCount; }
     public String getDirector() { return director; }
     public List<String> getActors() { return actors; }
+
+    public void setTitle(String title) { this.title = title; }
+    public void setDescription(String description) { this.description = description; }
+    public void setDuration(int duration) { this.duration = duration; }
+    public void setReleaseYear(int releaseYear) { this.releaseYear = releaseYear; }
+    public void setDirector(String director) { this.director = director; }
+    public void setActors(List<String> actors) { this.actors = actors; }
 
     public void increaseView() { this.views++; }
     public void increaseFavoriteCount() { this.favoriteCount++; }

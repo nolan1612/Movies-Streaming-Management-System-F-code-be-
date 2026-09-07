@@ -1,16 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-/**
- *
- * @author nguyenhoangminhnhat
- */
+
 public class RecentWatchStack implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final int MAX_SIZE = 5;
@@ -22,11 +15,11 @@ public class RecentWatchStack implements Serializable {
     }
 
     public void push(String movieId) {
-        stack.remove(movieId); // Nếu đã tồn tại, xóa để đẩy lên đầu
+        stack.remove(movieId);
         if (stack.size() >= MAX_SIZE) {
-            stack.remove(0); // Xóa phần tử cũ nhất (đáy stack)
+            stack.remove(0);
         }
-        stack.add(movieId); // Thêm vào đỉnh stack
+        stack.add(movieId);
     }
 
     public String pop() {
