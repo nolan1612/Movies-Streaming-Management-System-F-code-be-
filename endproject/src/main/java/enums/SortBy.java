@@ -9,5 +9,5 @@ package enums;
  * @author nguyenhoangminhnhat
  */
 public enum SortBy {
-   TITLE, RATING, RELEASE_YEAR, POPULARITY
+   TITLE, RATING, RELEASE_YEAR, POPULARITY, LIKES, DISLIKES
 }

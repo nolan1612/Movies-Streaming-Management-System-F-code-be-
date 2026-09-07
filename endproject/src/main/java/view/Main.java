@@ -99,25 +99,10 @@ public class Main {
                     case 1: handleShowAllMovies(scanner,movieService, movieController, categoryController, watchController, currentUser); break;
                     case 2: handleWatchlistManagement(scanner, movieController, watchController, currentUser); break;
                     case 3: handleFavoriteManagement(scanner, movieController, watchController, currentUser); break;
-                    case 4:
-                        System.out.println("\n--- PHIM XEM GẦN ĐÂY ---");
-                        List<String> recents = watchController.getRecentMovies(currentUser.getUserId());
-                        if (recents.isEmpty()) System.out.println("Chưa có lịch sử xem.");
-                        else {
-                            recents.forEach(mId -> {
-                                Movie m = movieController.getAllMovies().stream().filter(x -> x.getMovieId().equals(mId)).findFirst().orElse(null);
-                                if (m != null) System.out.println("- " + m.getTitle() + " (Đạo diễn: " + m.getDirector() + ")");
-                            });
-                        }
-                        break;
+                    case 4:handleWatchHistory(scanner, watchController, movieController, currentUser); break;
                     case 5: if (currentUser.getRole() == Role.ADMIN) handleCategoryCRUD(scanner, categoryController); break;
                     case 6: if (currentUser.getRole() == Role.ADMIN) handleMovieCRUD(scanner, movieController, categoryController); break;
-                    case 7:
-                        if (currentUser.getRole() == Role.ADMIN) {
-                            System.out.println("\n--- TOP PHIM XEM NHIỀU NHẤT ---");
-                            reportController.getTopViewed(3).forEach(m -> System.out.println("+ " + m.getTitle() + " - Lượt xem: " + m.getViews()));
-                        }
-                        break;
+                    case 7: if (currentUser.getRole() == Role.ADMIN) handleAdminReports(scanner, movieController); break;
                     case 0: currentUser = null; System.out.println("Đã đăng xuất."); break;
                 }
             }
@@ -150,13 +135,11 @@ public class Main {
                     System.out.printf("%-5d | %-25s | %-6d | %-10.1f | %-6d\n", (i + 1), m.getTitle(), m.getReleaseYear(), m.getRating(), m.getViews());
                 }
             } else if (sub == 2) {
-                System.out.print("Nhập từ khóa tìm kiếm: ");
-                movieController.search(scanner.nextLine()).forEach(m -> System.out.println(" - " + m.getTitle() + " (Đạo diễn: " + m.getDirector() + ")"));
+                handleSearchAndBrowse(scanner, movieController);
             } else if (sub == 3) {
                 System.out.println("Danh sách Thể loại:");
                 categoryController.getCategories().forEach(c -> System.out.println(" + " + c.getName()));
-                System.out.print("Nhập TÊN thể loại muốn lọc: ");
-                movieController.filterByCategory(scanner.nextLine()).forEach(m -> System.out.println(" - " + m.getTitle()));
+                handleSearchAndBrowse(scanner, movieController);
             } else if (sub == 4) {
                 System.out.print("Nhập TÊN PHIM chính xác: ");
                 Movie m = movieController.getMovieByTitle(scanner.nextLine());
@@ -164,46 +147,11 @@ public class Main {
                     printMovieDetails(m);
                     System.out.print("Bạn có muốn phát phim này ngay bây giờ? (y/n): ");
                     if (scanner.nextLine().equalsIgnoreCase("y")) {
-                        simulateStreaming(scanner, watchController, user.getUserId(), m);
+                       handleWatchMovie(scanner, movieController, watchController, user);
                     }
                 } else System.out.println("Không tìm thấy phim!");
             } else if (sub == 0) break;
         }
-    }
-
-    private static void simulateStreaming(Scanner scanner, WatchController watchController, String userId, Movie movie) {
-        watchController.startWatching(userId, movie.getMovieId());
-        System.out.println("\n▶ ĐANG PHÁT PHIM: [" + movie.getTitle() + "]");
-        System.out.println("-------------------------------------------------");
-        System.out.println("[Hướng dẫn]: Nhấn phím ENTER để TẠM DỪNG / TIẾP TỤC.");
-        System.out.println("            Nhập phím 'e' rồi ENTER để THOÁT PHIM.");
-        System.out.println("-------------------------------------------------");
-
-        long totalWatchedSeconds = 0;
-        long lastResumeTime = System.currentTimeMillis();
-        boolean isPlaying = true;
-
-        while (true) {
-            String input = scanner.nextLine();
-            long now = System.currentTimeMillis();
-
-            if (input.equalsIgnoreCase("e")) {
-                if (isPlaying) totalWatchedSeconds += (now - lastResumeTime) / 1000;
-                break;
-            } else {
-                if (isPlaying) {
-                    totalWatchedSeconds += (now - lastResumeTime) / 1000;
-                    isPlaying = false;
-                    System.out.println("⏸ Phim đã TẠM DỪNG. Tổng thời gian bạn đã xem: " + totalWatchedSeconds + " giây.");
-                    System.out.println(" (Nhấn ENTER để tiếp tục, nhập 'e' để thoát)");
-                } else {
-                    isPlaying = true;
-                    lastResumeTime = System.currentTimeMillis();
-                    System.out.println("▶TIẾP TỤC");
-                }
-            }
-        }
-        System.out.println("⏹ Bạn đã thoát trình phát phim. Tổng thời gian đã xem: " + totalWatchedSeconds + " giây.");
     }
 
     private static void handleWatchlistManagement(Scanner scanner, MovieController movieController, WatchController watchController, User user) {
@@ -354,4 +302,136 @@ public class Main {
         System.out.println("Diễn viên   : " + String.join(", ", m.getActors()));
         System.out.println("==============================================");
     }
-}
+    
+    private static void handleWatchMovie(Scanner scanner, MovieController movieController, WatchController watchController, User user) {
+        System.out.print("Nhập tên phim muốn xem: ");
+        Movie m = movieController.getMovieByTitle(scanner.nextLine());
+        if (m == null) {
+            System.out.println("Không tìm thấy phim!");
+            return;
+        }
+
+        int startMinute = 0;
+        WatchHistory history = watchController.getMovieWatchHistory(user.getUserId(), m.getMovieId());
+        
+        // Tính năng: Continue Watching
+        if (history != null && history.getWatchedDuration() > 0 && history.getWatchedDuration() < m.getDuration()) {
+            System.out.println("Bạn đang xem dở phim này tại phút thứ: " + history.getWatchedDuration() + "/" + m.getDuration());
+            System.out.print("Bạn có muốn xem tiếp không? (Y/N): ");
+            if (scanner.nextLine().trim().equalsIgnoreCase("Y")) {
+                startMinute = history.getWatchedDuration();
+            } else {
+                System.out.println("Bắt đầu xem lại từ đầu...");
+            }
+        }
+
+        System.out.println("\n▶ Đang phát phim: " + m.getTitle() + " (Bắt đầu từ phút " + startMinute + ")");
+        watchController.startWatching(user.getUserId(), m.getMovieId());
+        
+        System.out.print("Nhập số phút bạn đã xem trước khi dừng (Tối đa " + m.getDuration() + "): ");
+        int watchedMins;
+        try {
+            watchedMins = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            watchedMins = m.getDuration();
+        }
+        if (watchedMins > m.getDuration()) watchedMins = m.getDuration();
+        
+        watchController.updateWatchProgress(user.getUserId(), m.getMovieId(), watchedMins);
+        System.out.println("Đã lưu tiến trình xem phim!");
+
+        // Tính năng: Đánh giá sau khi xem (Viewing statistics)
+        System.out.print("Bạn cảm thấy bộ phim này thế nào? (1: Thích, 2: Không thích, 0: Bỏ qua): ");
+        String rateInput = scanner.nextLine();
+        if (rateInput.equals("1")) {
+            movieController.rateMovie(m.getMovieId(), true);
+            System.out.println("Cảm ơn bạn đã đánh giá Thích!");
+        } else if (rateInput.equals("2")) {
+            movieController.rateMovie(m.getMovieId(), false);
+            System.out.println("Cảm ơn bạn đã đóng góp ý kiến!");
+        }
+    }
+    
+    private static void handleSearchAndBrowse(Scanner scanner, MovieController movieController) {
+        System.out.println("\n1. Tìm kiếm theo tên/đạo diễn/diễn viên");
+        System.out.println("2. Duyệt phim theo Category (Thể loại)");
+        System.out.print("Chọn: ");
+        String choice = scanner.nextLine();
+
+        List<Movie> results = new ArrayList<>();
+        if (choice.equals("1")) {
+            System.out.print("Nhập từ khóa: ");
+            results = movieController.searchMovies(scanner.nextLine());
+        } else if (choice.equals("2")) {
+            System.out.print("Nhập tên thể loại (VD: Action, Drama): ");
+            results = movieController.getMoviesByCategoryName(scanner.nextLine());
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("Không tìm thấy kết quả nào.");
+        } else {
+            System.out.println("\n--- KẾT QUẢ TÌM KIẾM ---");
+            for (Movie m : results) {
+                System.out.println("- " + m.getTitle() + " | Thời lượng: " + m.getDuration() + "p | Lượt xem: " + m.getViews());
+                System.out.println("  [👍 Thích: " + m.getLikeCount() + " | 👎 Không thích: " + m.getDislikeCount() + "]");
+            }
+        }
+    }
+    
+    private static void handleWatchHistory(Scanner scanner, WatchController watchController, MovieController movieController, User user) {
+        System.out.println("\n--- LỊCH SỬ XEM PHIM ---");
+        System.out.println("1. Xem 5 phim gần nhất");
+        System.out.println("2. Xem toàn bộ lịch sử xem");
+        System.out.print("Chọn: ");
+        String choice = scanner.nextLine();
+
+        if (choice.equals("1")) {
+            List<String> recentIds = watchController.getRecentMovies(user.getUserId());
+            if (recentIds.isEmpty()) {
+                System.out.println(" (Trống)");
+            } else {
+                for (String id : recentIds) {
+                    Movie m = movieController.getAllMovies().stream().filter(movie -> movie.getMovieId().equals(id)).findFirst().orElse(null);
+                    if (m != null) System.out.println(" - " + m.getTitle());
+                }
+            }
+        } else if (choice.equals("2")) {
+            List<Movie> history = watchController.getFullWatchHistory(user.getUserId());
+            if (history.isEmpty()) System.out.println(" (Trống)");
+            else history.forEach(m -> System.out.println(" - " + m.getTitle()));
+        }
+    }
+    
+    private static void handleAdminReports(Scanner scanner, MovieController movieController) {
+        System.out.println("\n--- BÁO CÁO THỐNG KÊ (ADMIN) ---");
+        System.out.println("1. Phim được xem nhiều nhất (POPULARITY)");
+        System.out.println("2. Phim có đánh giá cao nhất (RATING)");
+        System.out.println("3. Phim được yêu thích nhất (Nhiều LIKES)");
+        System.out.println("4. Phim bị đánh giá thấp nhất (Nhiều DISLIKES)");
+        System.out.println("5. Trending Categories (Thể loại phổ biến nhất)");
+        System.out.print("Chọn: ");
+        String choice = scanner.nextLine();
+
+        if (choice.equals("5")) {
+            System.out.println("\n--- TRENDING CATEGORIES ---");
+            Map<String, Integer> trending = movieController.getTrendingCategories();
+            if (trending.isEmpty()) System.out.println("Không có dữ liệu.");
+            else {
+                int rank = 1;
+                for (Map.Entry<String, Integer> entry : trending.entrySet()) {
+                    System.out.println(rank++ + ". " + entry.getKey() + " - " + entry.getValue() + " lượt xem tổng cộng");
+                }
+            }
+            return;
+        }
+
+        SortBy sortBy = SortBy.TITLE;
+        if (choice.equals("1")) sortBy = SortBy.POPULARITY;
+        else if (choice.equals("2")) sortBy = SortBy.RATING;
+        else if (choice.equals("3")) sortBy = SortBy.LIKES;
+        else if (choice.equals("4")) sortBy = SortBy.DISLIKES;
+
+        List<Movie> list = movieController.sortMovies(sortBy, OrderType.DESC);
+        list.forEach(m -> System.out.println("- " + m.getTitle() + " | Views: " + m.getViews() + " | Rating: " + m.getRating() + " | Likes: " + m.getLikeCount() + " | Dislikes: " + m.getDislikeCount()));
+    }
+}   

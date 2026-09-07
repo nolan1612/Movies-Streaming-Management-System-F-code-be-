@@ -1,7 +1,9 @@
 package controller;
 
 import model.Movie;
+import model.WatchHistory;
 import service.WatchService;
+
 import java.util.List;
 
 public class WatchController {
@@ -18,5 +20,8 @@ public class WatchController {
     public List<Movie> getFavoriteMovies(String userId) { return watchService.getFavoriteMovies(userId); }
     public List<Movie> getWatchlistMovies(String userId) { return watchService.getWatchlistMovies(userId); }
     public void startWatching(String userId, String movieId) { watchService.startWatchingMovie(userId, movieId); }
+    public WatchHistory getMovieWatchHistory(String userId, String movieId) { return watchService.getMovieWatchHistory(userId, movieId); }
+    public void updateWatchProgress(String userId, String movieId, int watchedMinutes) { watchService.updateWatchProgress(userId, movieId, watchedMinutes); }
+    public List<Movie> getFullWatchHistory(String userId) { return watchService.getFullWatchHistory(userId); }
     public List<String> getRecentMovies(String userId) { return watchService.getRecentMovies(userId); }
 }

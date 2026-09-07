@@ -30,5 +30,5 @@ public class WatchlistRepository {
     
     public Map<String, Watchlist> findAll() {
     return watchlists;
-    }
+}
 }
