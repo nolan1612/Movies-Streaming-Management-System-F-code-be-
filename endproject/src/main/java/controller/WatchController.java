@@ -16,9 +16,9 @@ public class WatchController {
     public WatchController(WatchService watchService) {
         this.watchService = watchService;
     }
-
+    
     public void addToWatchlist(String userId, String movieId) { watchService.addToWatchlist(userId, movieId); }
-    public void toggleFavorite(String userId, String movieId) { watchService.toggleFavorite(userId, movieId); }
+    public void removeFromWatchlist(String userId, String movieId) { watchService.removeFromWatchlist(userId, movieId); }
     public void watchMovie(String userId, String movieId) { watchService.watchMovie(userId, movieId); }
     public List<String> getRecentMovies() { return watchService.getRecentStack().getRecentMovies(); }
 }

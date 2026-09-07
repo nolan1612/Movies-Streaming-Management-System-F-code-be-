@@ -22,8 +22,8 @@ public class MovieController {
     }
 
     public List<Movie> getAllMovies() { return movieService.getAllMovies(); }
-    public void addMovie(Movie movie) { movieService.addMovie(movie); }
+    public void addMovie(Movie movie, List<String> categoryIds){ movieService.addMovie(movie, categoryIds); }
     public boolean deleteMovie(String id) { return movieService.deleteMovie(id); }
-    public List<Movie> search(String keyword) { return movieService.searchByTitle(keyword); }
+    public List<Movie> search(String keyword) { return movieService.searchMovies(keyword); }
     public List<Movie> sort(SortBy sortBy, OrderType orderType) { return movieService.sortMovies(sortBy, orderType); }
 }
